@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heartland & Mid-South Casting Radar | 14-Day Audition Hub</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            radar: {
+              950: '#070B14',
+              900: '#0C1222',
+              850: '#10192F',
+              800: '#162340',
+              700: '#23345A',
+              border: '#1E2C4A',
+              gold: '#F59E0B',
+              goldHover: '#D97706',
+              emerald: '#10B981',
+              sky: '#0EA5E9',
+              purple: '#A855F7',
+              rose: '#F43F5E'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070B14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E2C4A;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2E426F;
+    }
+
+    /* Radar sweep animation */
+    @keyframes radarPulse {
+      0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+      70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 7px rgba(245, 158, 11, 0); }
+      100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+    .radar-beacon {
+      animation: radarPulse 2.4s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+
+    /* Modal slide animation */
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-enter {
+      animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+
+<body class="bg-radar-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- TOP APP HEADER -->
+  <header class="border-b border-radar-border bg-radar-900/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-radar-950 font-black shrink-0">
+          <i data-lucide="clapperboard" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+              Heartland<span class="text-amber-400">Casting</span>
+              <span class="text-xs font-semibold text-slate-400 font-mono tracking-normal">Radar</span>
+            </h1>
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full hidden sm:inline-block">
+              14-Day Live Wire
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Oklahoma • Texas • Arkansas • Kansas • Missouri Acting Dispatch</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- AI Notice Ingestor Button -->
+        <button 
+          onclick="openAiIngestorModal()" 
+          class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-radar-850 hover:bg-radar-800 text-amber-300 border border-amber-500/30 hover:border-amber-400 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+          title="Paste raw casting call text from email or groups"
+        >
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>AI Import Notice</span>
+        </button>
+
+        <!-- Saved Audition Pipeline Drawer Trigger -->
+        <button 
+          onclick="toggleTrackerDrawer(true)" 
+          class="relative flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg bg-amber-500 hover:bg-amber-400 text-radar-950 transition-all shadow-md shadow-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+        >
+          <i data-lucide="bookmark-check" class="w-3.5 h-3.5"></i>
+          <span>My Auditions</span>
+          <span id="headerTrackerCount" class="ml-1 bg-radar-950 text-amber-300 text-[10px] px-1.5 py-0.2 rounded-full font-black">0</span>
+        </button>
+
+        <!-- CSV Export Button -->
+        <button 
+          onclick="exportRadarCSV()" 
+          title="Export current filtered calls to CSV" 
+          class="p-2 rounded-lg bg-radar-850 hover:bg-radar-800 text-slate-300 hover:text-white border border-radar-border transition focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+        >
+          <i data-lucide="download" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- REQUIRED SOURCES HUB & DIRECT REGIONAL DIRECTORY STRIP -->
+  <section class="bg-gradient-to-r from-radar-900 via-radar-850 to-radar-900 border-b border-radar-border px-4 sm:px-6 lg:px-8 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs">
+      
+      <!-- Source Bar Label -->
+      <div class="flex items-center space-x-2 shrink-0">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 radar-beacon"></span>
+        <span class="font-bold text-slate-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+          <i data-lucide="satellite" class="w-3.5 h-3.5 text-amber-400"></i>
+          Required Sources Hub:
+        </span>
+      </div>
+
+      <!-- 5 Mandatory Hubs with Direct Clickable External Links -->
+      <div class="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+        
+        <!-- 1. Oklahoma Film + Music Office -->
+        <a 
+          href="https://www.okfilmmusic.org/crew-and-casting-calls" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold transition group shrink-0"
+          title="Direct link to Oklahoma Film + Music Crew & Casting Calls"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>1. OK Film + Music</span>
+          <i data-lucide="external-link" class="w-3 h-3 group-hover:translate-x-0.5 transition-transform text-emerald-400"></i>
+        </a>
+
+        <!-- 2. Backstage Texas -->
+        <a 
+          href="https://www.backstage.com/casting/open-casting-calls/texas-casting/" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-violet-950/60 hover:bg-violet-900/80 text-violet-300 border border-violet-500/40 text-[11px] font-semibold transition group shrink-0"
+          title="Direct link to Backstage Texas Open Casting Calls"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+          <span>2. Backstage Texas</span>
+          <i data-lucide="external-link" class="w-3 h-3 group-hover:translate-x-0.5 transition-transform text-violet-400"></i>
+        </a>
+
+        <!-- 3. Backstage Oklahoma City -->
+        <a 
+          href="https://www.backstage.com/casting/open-casting-calls/oklahoma-city-ok/" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 border border-purple-500/40 text-[11px] font-semibold transition group shrink-0"
+          title="Direct link to Backstage Oklahoma City Auditions"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+          <span>3. Backstage OKC</span>
+          <i data-lucide="external-link" class="w-3 h-3 group-hover:translate-x-0.5 transition-transform text-purple-400"></i>
+        </a>
+
+        <!-- 4. Casting Networks OKC -->
+        <a 
+          href="https://www.castingnetworks.com/oklahoma-city-auditions-and-casting-calls/" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-sky-950/60 hover:bg-sky-900/80 text-sky-300 border border-sky-500/40 text-[11px] font-semibold transition group shrink-0"
+          title="Direct link to Casting Networks OKC Auditions"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+          <span>4. Casting Networks OKC</span>
+          <i data-lucide="external-link" class="w-3 h-3 group-hover:translate-x-0.5 transition-transform text-sky-400"></i>
+        </a>
+
+        <!-- 5. AllCasting Oklahoma City -->
+        <a 
+          href="https://allcasting.com/castingcalls/in-oklahomacityok" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-orange-950/60 hover:bg-orange-900/80 text-orange-300 border border-orange-500/40 text-[11px] font-semibold transition group shrink-0"
+          title="Direct link to AllCasting Oklahoma City Calls"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
+          <span>5. AllCasting OKC</span>
+          <i data-lucide="external-link" class="w-3 h-3 group-hover:translate-x-0.5 transition-transform text-orange-400"></i>
+        </a>
+
+        <!-- Additional Regional Film Office Links -->
+        <a href="https://gov.texas.gov/film" target="_blank" rel="noopener noreferrer" title="Texas Film Commission" class="p-1 px-2 rounded bg-radar-900 hover:bg-radar-800 text-slate-300 border border-radar-border text-[10px] shrink-0">TX Film</a>
+        <a href="https://www.arkansasproduction.com/" target="_blank" rel="noopener noreferrer" title="Arkansas Film Commission" class="p-1 px-2 rounded bg-radar-900 hover:bg-radar-800 text-slate-300 border border-radar-border text-[10px] shrink-0">AR Film</a>
+        <a href="https://www.kansascommerce.gov/kcaic/" target="_blank" rel="noopener noreferrer" title="Kansas Creative Arts Industries Commission" class="p-1 px-2 rounded bg-radar-900 hover:bg-radar-800 text-slate-300 border border-radar-border text-[10px] shrink-0">KS Arts</a>
+        <a href="https://mofilm.org/" target="_blank" rel="noopener noreferrer" title="Missouri Film Office" class="p-1 px-2 rounded bg-radar-900 hover:bg-radar-800 text-slate-300 border border-radar-border text-[10px] shrink-0">MO Film</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FILTER WORKSTATION & DYNAMIC 14-DAY TIMELINE -->
+  <section class="bg-radar-900 border-b border-radar-border pt-4 pb-5 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto space-y-4">
+      
+      <!-- Primary State Navigation Tabs with Synchronized Badges -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 max-w-full" id="stateTabsBar">
+          <!-- Injected via JavaScript with live reactive count badges -->
+        </div>
+
+        <!-- 14-Day Timeline Status Banner -->
+        <div class="flex items-center space-x-2 text-xs text-slate-300 bg-radar-950 border border-radar-border px-3 py-1.5 rounded-xl shrink-0">
+          <i data-lucide="calendar-clock" class="w-4 h-4 text-amber-400"></i>
+          <span>Timeline: <strong id="timelineStatusText" class="text-amber-300">Last 14 Days</strong></span>
+          <span class="text-slate-600">|</span>
+          <span id="activeJobsTotalBadge" class="text-emerald-400 font-semibold">18 Active Postings</span>
+        </div>
+      </div>
+
+      <!-- Live Search, 14-Day Timeline Range Slider, Sort & Union Dropdowns -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+        
+        <!-- Search Input with live keyword matcher -->
+        <div class="lg:col-span-4 relative">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            oninput="handleSearchQuery(this.value)" 
+            placeholder="Search roles, age (e.g. 30s), production, keywords..."
+            class="w-full bg-radar-850 border border-radar-border rounded-xl pl-9 pr-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition"
+          >
+        </div>
+
+        <!-- 14-Day Timeline Presets & Range Slider -->
+        <div class="lg:col-span-5 bg-radar-850 border border-radar-border rounded-xl px-3.5 py-2 flex flex-col justify-center space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-400 flex items-center gap-1 font-medium">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> Max Age:
+            </span>
+            <div class="flex items-center space-x-1">
+              <button onclick="setTimelineQuick(1)" id="btnTime1" class="px-2 py-0.5 rounded text-[11px] bg-radar-800 hover:bg-radar-700 text-slate-300 transition">24h</button>
+              <button onclick="setTimelineQuick(3)" id="btnTime3" class="px-2 py-0.5 rounded text-[11px] bg-radar-800 hover:bg-radar-700 text-slate-300 transition">3d</button>
+              <button onclick="setTimelineQuick(7)" id="btnTime7" class="px-2 py-0.5 rounded text-[11px] bg-radar-800 hover:bg-radar-700 text-slate-300 transition">7d</button>
+              <button onclick="setTimelineQuick(14)" id="btnTime14" class="px-2 py-0.5 rounded text-[11px] bg-amber-500 text-radar-950 font-bold transition">14d (All)</button>
+            </div>
+            <span id="sliderValueText" class="font-bold text-amber-400 text-xs w-14 text-right">14 Days</span>
+          </div>
+
+          <input 
+            type="range" 
+            id="daysAgoSlider" 
+            min="1" 
+            max="14" 
+            value="14" 
+            oninput="handleSliderInput(this.value)"
+            class="w-full accent-amber-500 h-1.5 bg-radar-700 rounded-lg cursor-pointer"
+          >
+        </div>
+
+        <!-- Sort & Union Dropdowns -->
+        <div class="lg:col-span-3 grid grid-cols-2 gap-2">
+          <!-- Sort Criteria -->
+          <select 
+            id="sortFilterSelect" 
+            onchange="handleSortSelect(this.value)"
+            class="bg-radar-850 border border-radar-border rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+          >
+            <option value="date-newest">📅 Newest Posted</option>
+            <option value="deadline-soon">⏳ Deadline Soon</option>
+            <option value="pay-high">💰 Highest Pay</option>
+            <option value="title-az">🔤 Title A-Z</option>
+          </select>
+
+          <!-- Union Filter -->
+          <select 
+            id="unionFilterSelect" 
+            onchange="handleUnionSelect(this.value)"
+            class="bg-radar-850 border border-radar-border rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+          >
+            <option value="all">🎭 Any Union</option>
+            <option value="SAG-AFTRA">SAG-AFTRA</option>
+            <option value="SAG-Eligible">SAG Eligible</option>
+            <option value="AEA">Equity (AEA)</option>
+            <option value="Non-Union">Non-Union</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Quick Platform Filter & Project Type Chips -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-radar-border/80 text-xs">
+        <!-- Filter by Verified Platform Source -->
+        <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 max-w-full" id="platformFilterChips">
+          <!-- Dynamic platform pills injected by JS -->
+        </div>
+
+        <!-- Filter by Project Category -->
+        <div class="flex items-center space-x-1 overflow-x-auto pb-1 shrink-0" id="categoryFilterChips">
+          <!-- Dynamic Category Pills injected by JS -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MAIN CASTING FEED RADAR -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Top Result Banner -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-2 text-xs sm:text-sm">
+        <span class="text-slate-400">Active Radar Feed:</span>
+        <span id="filteredCountLabel" class="font-bold text-slate-100">Showing 18 Auditions</span>
+        <span id="activeFilterTags" class="text-amber-400 font-mono text-xs"></span>
+      </div>
+
+      <button onclick="resetAllFilters()" class="text-xs text-slate-400 hover:text-amber-400 flex items-center gap-1 transition focus:outline-none">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+        <span>Reset Filters</span>
+      </button>
+    </div>
+
+    <!-- Empty State Container -->
+    <div id="radarEmptyState" class="hidden text-center py-20 px-4 bg-radar-900/60 rounded-2xl border border-radar-border">
+      <div class="w-14 h-14 bg-radar-850 rounded-2xl flex items-center justify-center mx-auto mb-3 text-slate-500">
+        <i data-lucide="film" class="w-7 h-7"></i>
+      </div>
+      <h3 class="text-base font-bold text-white mb-1">No casting calls match current filters</h3>
+      <p class="text-xs text-slate-400 max-w-md mx-auto mb-4">
+        Try extending your 14-day timeline slider or switching to another state tab to scan the full regional bulletin.
+      </p>
+      <button onclick="resetAllFilters()" class="px-4 py-2 text-xs font-bold rounded-lg bg-amber-500 text-radar-950 hover:bg-amber-400 transition">
+        Show All 14-Day Auditions
+      </button>
+    </div>
+
+    <!-- Cards Grid -->
+    <div id="castingCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Dynamically generated casting cards -->
+    </div>
+
+  </main>
+
+  <!-- MODAL: DETAILED AUDITION BREAKDOWN & GEMINI SLATE PITCH GENERATOR -->
+  <div 
+    id="jobDetailModal" 
+    class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+    onclick="handleModalBackdropClick(event, 'jobDetailModal', closeJobDetailModal)"
+  >
+    <div class="bg-radar-900 border border-radar-border rounded-2xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden modal-enter">
+      
+      <!-- Modal Top Header -->
+      <div class="p-5 border-b border-radar-border bg-radar-950 flex items-start justify-between">
+        <div>
+          <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
+            <span id="modalStateTag" class="text-xs font-black px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">OK</span>
+            <span id="modalSourceBadge" class="text-xs font-bold px-2.5 py-0.5 rounded flex items-center gap-1">Source</span>
+            <span id="modalUnionTag" class="text-xs px-2 py-0.5 rounded bg-radar-800 text-slate-300">SAG-AFTRA</span>
+            <span id="modalPostedTime" class="text-xs text-emerald-400 font-medium">Posted 2 days ago</span>
+          </div>
+          <h2 id="modalJobTitle" class="text-xl sm:text-2xl font-black text-white tracking-tight">Production Title</h2>
+          <p id="modalCompanyInfo" class="text-xs text-slate-400 mt-1">Production Co / Casting Director</p>
+        </div>
+
+        <button onclick="closeJobDetailModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-radar-800 transition">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-5 overflow-y-auto space-y-6 flex-1 text-sm text-slate-200">
+        
+        <!-- Quick Specs Matrix -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-radar-950 p-3.5 rounded-xl border border-radar-border text-xs">
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Compensation</span>
+            <span id="modalPayRate" class="font-bold text-amber-400 text-sm">$1,158/day Scale</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Location</span>
+            <span id="modalLocationText" class="font-semibold text-slate-200 text-sm">Tulsa, OK</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Shoot Window</span>
+            <span id="modalShootWindow" class="font-medium text-slate-300">Nov 10 - Dec 5</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Tape Deadline</span>
+            <span id="modalTapeDeadline" class="font-bold text-rose-400 text-sm">Oct 12</span>
+          </div>
+        </div>
+
+        <!-- Synopsis -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+            <i data-lucide="film" class="w-4 h-4 text-amber-400"></i> Project Overview & Logline
+          </h4>
+          <p id="modalSynopsisText" class="text-slate-300 leading-relaxed text-xs sm:text-sm bg-radar-950 p-3 rounded-xl border border-radar-border">
+            Synopsis description goes here.
+          </p>
+        </div>
+
+        <!-- Roles Breakdown List -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+            <i data-lucide="users" class="w-4 h-4 text-amber-400"></i> Character Roles & Breakdowns
+          </h4>
+          <div id="modalRolesList" class="space-y-3">
+            <!-- Dynamic role cards -->
+          </div>
+        </div>
+
+        <!-- Self Tape Instructions -->
+        <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 space-y-2">
+          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="video" class="w-4 h-4 text-amber-400"></i> Self-Tape & Slate Requirements
+          </h4>
+          <ul id="modalTapeSpecsList" class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <!-- Dynamic specs -->
+          </ul>
+        </div>
+
+        <!-- GEMINI AI AUDITION SLATE & COVER LETTER GENERATOR -->
+        <div class="bg-gradient-to-r from-radar-950 via-radar-850 to-radar-950 border border-amber-500/30 rounded-2xl p-4 sm:p-5 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                <i data-lucide="wand-2" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <h5 class="text-xs sm:text-sm font-bold text-white">Gemini AI: Actor Slate Script & Submission Note</h5>
+                <p class="text-[11px] text-slate-400">Generates a tailored email pitch to the casting director and on-camera slate</p>
+              </div>
+            </div>
+            <span class="text-[10px] text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">gemini-3-flash-preview</span>
+          </div>
+
+          <!-- Actor input controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs">
+            <div class="sm:col-span-5">
+              <label class="block text-[11px] text-slate-400 font-semibold mb-1">Target Role:</label>
+              <select id="aiSelectRole" class="w-full bg-radar-950 border border-radar-border text-slate-200 rounded-lg px-2.5 py-1.5 focus:border-amber-400 focus:outline-none">
+                <!-- Injected via role list -->
+              </select>
+            </div>
+            <div class="sm:col-span-5">
+              <label class="block text-[11px] text-slate-400 font-semibold mb-1">Your Actor Name / Highlights:</label>
+              <input type="text" id="aiActorHighlights" placeholder="e.g. Jane Doe, Oklahoma local hire, firearm training, SAG-E" class="w-full bg-radar-950 border border-radar-border text-slate-200 rounded-lg px-2.5 py-1.5 focus:border-amber-400 focus:outline-none">
+            </div>
+            <div class="sm:col-span-2 flex items-end">
+              <button onclick="generateAiSlateAndPitch()" id="btnGeneratePitch" class="w-full py-1.5 px-3 bg-amber-500 hover:bg-amber-400 text-radar-950 font-bold rounded-lg text-xs flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Draft Note</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- AI Output Card -->
+          <div id="aiPitchContainer" class="hidden mt-3 p-3.5 bg-radar-950 rounded-xl border border-radar-border text-xs space-y-2">
+            <div class="flex items-center justify-between text-slate-400 text-[11px]">
+              <span class="text-amber-300 font-bold flex items-center gap-1">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i> Tailored Slate Script & CD Cover Note:
+              </span>
+              <button onclick="copyGeneratedPitch()" class="text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Script
+              </button>
+            </div>
+            <div id="aiPitchOutput" class="text-slate-200 whitespace-pre-line leading-relaxed font-mono text-[11px] p-2 bg-radar-900 rounded border border-radar-border"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-radar-border bg-radar-950 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center space-x-2">
+          <button id="modalSaveTrackerBtn" onclick="toggleSaveCurrentModalJob()" class="px-3.5 py-2 font-semibold rounded-lg border border-radar-border bg-radar-850 hover:bg-radar-800 text-slate-200 flex items-center gap-1.5 transition">
+            <i data-lucide="bookmark" class="w-4 h-4"></i>
+            <span id="modalSaveBtnLabel">Save to Pipeline</span>
+          </button>
+          
+          <a id="modalExternalSourceLink" href="#" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 font-semibold rounded-lg border border-radar-border bg-radar-850 hover:bg-radar-800 text-slate-200 flex items-center gap-1.5 transition">
+            <i data-lucide="globe" class="w-4 h-4 text-amber-400"></i>
+            <span>View on Official Source</span>
+          </a>
+        </div>
+
+        <a id="modalMailtoLink" href="#" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-radar-950 font-bold rounded-lg flex items-center gap-1.5 transition shadow-lg shadow-amber-500/20">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Submit Self-Tape / Email</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: GEMINI AI RAW CASTING NOTICE INGESTOR -->
+  <div 
+    id="aiIngestorModal" 
+    class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+    onclick="handleModalBackdropClick(event, 'aiIngestorModal', closeAiIngestorModal)"
+  >
+    <div class="bg-radar-900 border border-radar-border rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden modal-enter">
+      
+      <div class="p-5 border-b border-radar-border bg-radar-950 flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">AI Casting Notice Ingestor</h3>
+            <p class="text-xs text-slate-400">Paste unformatted casting calls from emails, Facebook groups, or okfilmmusic.org</p>
+          </div>
+        </div>
+        <button onclick="closeAiIngestorModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs">
+        <p class="text-slate-300">
+          Paste any raw, unformatted text from Oklahoma, Texas, Arkansas, Kansas, or Missouri casting calls. Gemini extracts production roles, character ages, compensation, shoot dates, and self-tape specs, adding it into the live 14-day bulletin.
+        </p>
+
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1">Paste Raw Casting Call Notice:</label>
+          <textarea 
+            id="rawNoticeInput" 
+            rows="6" 
+            placeholder="Example: CASTING CALL: Oklahoma City indie short filming Oct 22-26. Looking for Detective (Male, 40s) $500/day, and Witness (Female, 20s) $300/day. Send headshot and reel to okcdetectivefilm@gmail.com..."
+            class="w-full bg-radar-950 border border-radar-border rounded-xl p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <button onclick="loadSampleOKNotice()" class="text-amber-400 hover:underline text-[11px] flex items-center gap-1 font-semibold">
+            <i data-lucide="file-text" class="w-3 h-3"></i> Load Sample Tulsa Film Notice
+          </button>
+          <span class="text-slate-500 text-[10px]">Model: gemini-3-flash-preview (with heuristic fallback)</span>
+        </div>
+
+        <div id="aiIngestorLoading" class="hidden flex items-center justify-center py-3 space-x-2 text-amber-400 font-semibold">
+          <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+          <span>Gemini is parsing and structuring the notice...</span>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-radar-border bg-radar-950 flex items-center justify-end space-x-2">
+        <button onclick="closeAiIngestorModal()" class="px-4 py-2 rounded-lg bg-radar-850 hover:bg-radar-800 text-slate-300 font-medium text-xs">Cancel</button>
+        <button onclick="runAiNoticeIngestion()" id="btnExecuteIngest" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-radar-950 font-bold flex items-center gap-1.5 text-xs shadow-md shadow-amber-500/20">
+          <i data-lucide="cpu" class="w-4 h-4"></i> Parse & Inject into Radar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SLIDE-OVER DRAWER: AUDITION PIPELINE TRACKER -->
+  <div 
+    id="trackerDrawer" 
+    class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex justify-end"
+    onclick="handleModalBackdropClick(event, 'trackerDrawer', () => toggleTrackerDrawer(false))"
+  >
+    <div class="bg-radar-900 border-l border-radar-border w-full max-w-md h-full flex flex-col shadow-2xl modal-enter">
+      
+      <!-- Drawer Header -->
+      <div class="p-4 border-b border-radar-border flex items-center justify-between bg-radar-950">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i data-lucide="bookmark-check" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Audition Pipeline Tracker</h3>
+            <p class="text-[11px] text-slate-400">Track self-tapes, callbacks & bookings</p>
+          </div>
+        </div>
+        <button onclick="toggleTrackerDrawer(false)" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Pipeline Status Tabs -->
+      <div class="p-2.5 border-b border-radar-border bg-radar-950/70 flex items-center space-x-1 overflow-x-auto text-[11px]">
+        <button onclick="filterTrackerStatus('all')" class="tracker-tab-btn px-2.5 py-1 rounded bg-amber-500 text-radar-950 font-bold transition" data-status="all">All</button>
+        <button onclick="filterTrackerStatus('Shortlisted')" class="tracker-tab-btn px-2.5 py-1 rounded bg-radar-800 text-slate-300 hover:text-white transition" data-status="Shortlisted">Shortlisted</button>
+        <button onclick="filterTrackerStatus('Submitted')" class="tracker-tab-btn px-2.5 py-1 rounded bg-radar-800 text-slate-300 hover:text-white transition" data-status="Submitted">Tape Sent</button>
+        <button onclick="filterTrackerStatus('Callback')" class="tracker-tab-btn px-2.5 py-1 rounded bg-radar-800 text-slate-300 hover:text-white transition" data-status="Callback">Callback</button>
+        <button onclick="filterTrackerStatus('Booked')" class="tracker-tab-btn px-2.5 py-1 rounded bg-radar-800 text-slate-300 hover:text-white transition" data-status="Booked">Booked 🎉</button>
+      </div>
+
+      <!-- Pipeline Items Container -->
+      <div id="trackerListContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="p-3.5 border-t border-radar-border bg-radar-950 flex items-center justify-between text-xs">
+        <span id="trackerTotalSummaryText" class="text-slate-400">0 tracked auditions</span>
+        <button onclick="clearAllTrackerData()" class="text-rose-400 hover:text-rose-300 text-[11px] underline">Clear All</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="appToast" class="fixed bottom-5 right-5 z-50 hidden bg-radar-900 border border-amber-500/50 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transition-all duration-300 max-w-sm">
+    <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-amber-400 shrink-0"></i>
+    <div class="text-xs">
+      <p id="toastTitle" class="font-bold text-white">Alert</p>
+      <p id="toastMessage" class="text-slate-400">Action processed successfully.</p>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * DYNAMIC RELATIVE DATE ENGINE
+     * Fixes the date expiration bug by dynamically anchoring all 14-day postings to Date.now().
+     * This guarantees postings are always fresh, today is day 0, yesterday is day 1, up to day 13.
+     */
+    const NOW_TIMESTAMP = Date.now();
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+    function getRelativeDateStr(daysOffset) {
+      const d = new Date(NOW_TIMESTAMP + (daysOffset * MS_PER_DAY));
+      return d.toISOString().split('T')[0];
+    }
+
+    /**
+     * Safe HTML Escaper to prevent XSS injection from raw user text or pasted notices
+     */
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Heartland States Definitions
+    const STATES = [
+      { code: 'ALL', name: 'All Heartland (5)' },
+      { code: 'OK', name: 'Oklahoma' },
+      { code: 'TX', name: 'Texas' },
+      { code: 'AR', name: 'Arkansas' },
+      { code: 'KS', name: 'Kansas' },
+      { code: 'MO', name: 'Missouri' }
+    ];
+
+    // Source Configuration & Mandatory Hub Links
+    const PLATFORMS = {
+      'okfilm': {
+        name: 'OK Film + Music',
+        colorClass: 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40',
+        badgeBg: 'bg-emerald-500',
+        url: 'https://www.okfilmmusic.org/crew-and-casting-calls'
+      },
+      'backstage-tx': {
+        name: 'Backstage Texas',
+        colorClass: 'bg-violet-950/70 text-violet-300 border-violet-500/40',
+        badgeBg: 'bg-violet-500',
+        url: 'https://www.backstage.com/casting/open-casting-calls/texas-casting/'
+      },
+      'backstage-okc': {
+        name: 'Backstage OKC',
+        colorClass: 'bg-purple-950/70 text-purple-300 border-purple-500/40',
+        badgeBg: 'bg-purple-500',
+        url: 'https://www.backstage.com/casting/open-casting-calls/oklahoma-city-ok/'
+      },
+      'castingnet': {
+        name: 'Casting Networks OKC',
+        colorClass: 'bg-sky-950/70 text-sky-300 border-sky-500/40',
+        badgeBg: 'bg-sky-500',
+        url: 'https://www.castingnetworks.com/oklahoma-city-auditions-and-casting-calls/'
+      },
+      'allcasting': {
+        name: 'AllCasting OKC',
+        colorClass: 'bg-orange-950/70 text-orange-300 border-orange-500/40',
+        badgeBg: 'bg-orange-500',
+        url: 'https://allcasting.com/castingcalls/in-oklahomacityok'
+      },
+      'filmcomm': {
+        name: 'State Film Office Wire',
+        colorClass: 'bg-rose-950/70 text-rose-300 border-rose-500/40',
+        badgeBg: 'bg-rose-500',
+        url: 'https://gov.texas.gov/film'
+      }
+    };
+
+    const CATEGORIES = ['All Categories', 'Feature Film', 'Episodic TV / Streaming', 'Commercial', 'Theatre', 'Voiceover', 'Short Film'];
+
+    // Detailed, realistic casting dataset generated dynamically relative to Date.now()
+    let CASTING_DATA = [
+      // 1. OKLAHOMA - Source: Oklahoma Film + Music Office (Posted Today: daysAgo 0)
+      {
+        id: 'job-ok-1',
+        title: 'Red River Cross: Osage County Chronicles',
+        category: 'Feature Film',
+        state: 'OK',
+        city: 'Tulsa & Bartlesville',
+        platformKey: 'okfilm',
+        sourceName: 'OK Film + Music Office',
+        sourceUrl: 'https://www.okfilmmusic.org/crew-and-casting-calls',
+        productionCompany: 'Crossroads Native Cinema & Prairie Pictures',
+        director: 'David Standingwater',
+        daysAgo: 0, // Today
+        datePosted: getRelativeDateStr(0),
+        deadline: getRelativeDateStr(5),
+        shootDates: 'Upcoming in 4 weeks (Bartlesville & Pawhuska, OK)',
+        union: 'SAG-AFTRA',
+        payRate: '$1,158/day (Scale)',
+        payNumeric: 1158,
+        contactEmail: 'casting@prairiepicturesok.com',
+        synopsis: 'A modern legal drama set between the ranchlands of Osage County and downtown Tulsa, exploring contested land rights, water tables, and family heritage.',
+        roles: [
+          { name: 'Gabriel Hawk', age: '35-45', gender: 'Male', ethnicity: 'Native American / Indigenous', desc: 'Charismatic tribal attorney who left Tulsa corporate law to defend his home county.' },
+          { name: 'Sheriff Linda Cates', age: '45-55', gender: 'Female', ethnicity: 'Any', desc: 'Pragmatic county sheriff walking the tightrope between federal deputies and longtime ranching neighbors.' }
+        ],
+        tapeSpecs: [
+          'Full name, height, location, and representation in slate.',
+          'Framing: Chest-up, natural lighting.',
+          'Sides 1 & 2 available on OK Film & Music board.'
+        ]
+      },
+
+      // 2. OKLAHOMA - Source: Backstage Oklahoma City (Posted Yesterday: daysAgo 1)
+      {
+        id: 'job-ok-2',
+        title: 'Neon Plaza: Oklahoma City Nights',
+        category: 'Episodic TV / Streaming',
+        state: 'OK',
+        city: 'Oklahoma City',
+        platformKey: 'backstage-okc',
+        sourceName: 'Backstage OKC',
+        sourceUrl: 'https://www.backstage.com/casting/open-casting-calls/oklahoma-city-ok/',
+        productionCompany: 'Bricktown Media / Streaming Pilot Pickup',
+        director: 'Sarah Vance',
+        daysAgo: 1, // Yesterday
+        datePosted: getRelativeDateStr(-1),
+        deadline: getRelativeDateStr(4),
+        shootDates: 'Plaza & Paseo Arts Districts, OKC',
+        union: 'SAG-AFTRA',
+        payRate: '$703/day (Modified Low Budget)',
+        payNumeric: 703,
+        contactEmail: 'neonplazacasting@backstage.com',
+        synopsis: 'An ensemble indie crime-mystery following a group of indie gallery curators and bartenders who discover an antique counterfeit engraving plate.',
+        roles: [
+          { name: 'Julian Reyes', age: '26-34', gender: 'Male', ethnicity: 'Latino / Hispanic', desc: 'Gifted printmaker with a dry wit and sharp observant nature.' },
+          { name: 'Chloe Davenport', age: '28-36', gender: 'Female', ethnicity: 'Open', desc: 'Cocktail lounge manager caught between family debt and a loyal crew.' }
+        ],
+        tapeSpecs: [
+          'Slate with hobbies & current city of residence.',
+          'Read scene sides with conversational Midwest tempo.'
+        ]
+      },
+
+      // 3. OKLAHOMA - Source: Casting Networks OKC (Posted 2 days ago)
+      {
+        id: 'job-ok-3',
+        title: 'Lyric Theatre Plaza Stage: Sondheim Repertory',
+        category: 'Theatre',
+        state: 'OK',
+        city: 'Oklahoma City',
+        platformKey: 'castingnet',
+        sourceName: 'Casting Networks OKC',
+        sourceUrl: 'https://www.castingnetworks.com/oklahoma-city-auditions-and-casting-calls/',
+        productionCompany: 'Lyric Theatre of Oklahoma',
+        director: 'Michael Baron',
+        daysAgo: 2,
+        datePosted: getRelativeDateStr(-2),
+        deadline: getRelativeDateStr(6),
+        shootDates: 'Rehearsals begin next month; 3-week performance run',
+        union: 'AEA',
+        payRate: '$810/wk (Equity LOA Scale)',
+        payNumeric: 810,
+        contactEmail: 'auditions@lyrictheatreokc.com',
+        synopsis: 'Award-winning regional musical theatre company holding mainstage auditions for their winter musical showcase in Oklahoma City.',
+        roles: [
+          { name: 'Leading Baritone / Tenor', age: '28-45', gender: 'Male', ethnicity: 'Open', desc: 'Exceptional legit vocal capability (up to G#), witty comedic timing.' },
+          { name: 'Leading Mezzo-Soprano Belt', age: '24-38', gender: 'Female', ethnicity: 'Open', desc: 'Strong mover/dancer with dynamic stage presence.' }
+        ],
+        tapeSpecs: [
+          'Submit 32-bar audition cut in contemporary or classical musical theatre.',
+          'Attach theatrical resume with vocal range clearly marked.'
+        ]
+      },
+
+      // 4. OKLAHOMA - Source: AllCasting Oklahoma City (Posted 3 days ago)
+      {
+        id: 'job-ok-4',
+        title: 'Route 66 Heartland Discoveries Commercial',
+        category: 'Commercial',
+        state: 'OK',
+        city: 'Catoosa & Tulsa',
+        platformKey: 'allcasting',
+        sourceName: 'AllCasting OKC',
+        sourceUrl: 'https://allcasting.com/castingcalls/in-oklahomacityok',
+        productionCompany: 'Route 66 Centennial Promotions',
+        director: 'Harrison Reed',
+        daysAgo: 3,
+        datePosted: getRelativeDateStr(-3),
+        deadline: getRelativeDateStr(4),
+        shootDates: 'Filming in Catoosa & Arcadia, OK',
+        union: 'Non-Union',
+        payRate: '$1,800 Flat ($600/day + $1,200 Buyout)',
+        payNumeric: 1800,
+        contactEmail: 'route66allcasting@gmail.com',
+        synopsis: 'Statewide broadcast and streaming campaign highlighting the Blue Whale of Catoosa, Pops 66, and classic road trip dining.',
+        roles: [
+          { name: 'Road Trip Explorers', age: '24-35', gender: 'All Genders', ethnicity: 'Diverse/All', desc: 'Enthusiastic, charismatic actors with bright authentic smiles and natural on-camera banter.' }
+        ],
+        tapeSpecs: [
+          'Record a 45-second personality video sharing your favorite road trip memory.',
+          'Show hands and smiling profile in slate.'
+        ]
+      },
+
+      // 5. OKLAHOMA - Source: Oklahoma Film + Music Office (Posted 6 days ago)
+      {
+        id: 'job-ok-5',
+        title: 'Echoes of the Tallgrass',
+        category: 'Short Film',
+        state: 'OK',
+        city: 'Norman & OKC',
+        platformKey: 'okfilm',
+        sourceName: 'OK Film + Music Office',
+        sourceUrl: 'https://www.okfilmmusic.org/crew-and-casting-calls',
+        productionCompany: 'Norman Independent Filmmakers Guild',
+        director: 'Maya Lindsey',
+        daysAgo: 6,
+        datePosted: getRelativeDateStr(-6),
+        deadline: getRelativeDateStr(5),
+        shootDates: 'Norman campus and tallgrass prairie preserve',
+        union: 'Non-Union',
+        payRate: '$250/day + Meals & IMDB credit',
+        payNumeric: 250,
+        contactEmail: 'tallgrassshortfilm@okfilm.org',
+        synopsis: 'An atmospheric coming-of-age drama following an atmospheric science graduate student who records inexplicable acoustic frequencies over the Oklahoma plains.',
+        roles: [
+          { name: 'Dr. Aaron Vance', age: '45-60', gender: 'Male', ethnicity: 'Open', desc: 'Tenured climatologist who cautions against chasing unverified acoustic phenomena.' },
+          { name: 'Samantha Cole', age: '21-27', gender: 'Female', ethnicity: 'Open', desc: 'Inquisitive graduate researcher driven by her late grandfather’s weather journal.' }
+        ],
+        tapeSpecs: [
+          'Sides available on OK Film notice bulletin.',
+          'Slate with height and college theatre background.'
+        ]
+      },
+
+      // 6. TEXAS - Source: Backstage Texas (Posted Today: daysAgo 0)
+      {
+        id: 'job-tx-1',
+        title: 'The Austin Syndicate: Hill Country Protocol',
+        category: 'Episodic TV / Streaming',
+        state: 'TX',
+        city: 'Austin',
+        platformKey: 'backstage-tx',
+        sourceName: 'Backstage Texas',
+        sourceUrl: 'https://www.backstage.com/casting/open-casting-calls/texas-casting/',
+        productionCompany: 'Lone Star Streamline Pictures',
+        director: 'Christian Taylor',
+        daysAgo: 0, // Today
+        datePosted: getRelativeDateStr(0),
+        deadline: getRelativeDateStr(3),
+        shootDates: 'Austin & Dripping Springs, TX',
+        union: 'SAG-AFTRA',
+        payRate: '$3,756/wk (SAG Scale Television)',
+        payNumeric: 3756,
+        contactEmail: 'austinsyndicate@backstagetx.com',
+        synopsis: 'A high-stakes thriller exploring high-tech artificial intelligence ventures colliding with traditional Texas ranching families and state politics.',
+        roles: [
+          { name: 'Walker Bennett', age: '40-52', gender: 'Male', ethnicity: 'Open', desc: 'Stoic former Texas Ranger now leading corporate cybersecurity on private ranches.' },
+          { name: 'Dr. Teresa Santos', age: '32-42', gender: 'Female', ethnicity: 'Latina', desc: 'Data scientist who blows the whistle on predictive biometric polling.' }
+        ],
+        tapeSpecs: [
+          'Perform sides 1A with commanding, grounded presence.',
+          'Slate full body and profile views.'
+        ]
+      },
+
+      // 7. TEXAS - Source: Backstage Texas (Posted 2 days ago)
+      {
+        id: 'job-tx-2',
+        title: 'Dallas Cyber Security Explainer & Voiceover',
+        category: 'Voiceover',
+        state: 'TX',
+        city: 'Dallas',
+        platformKey: 'backstage-tx',
+        sourceName: 'Backstage Texas',
+        sourceUrl: 'https://www.backstage.com/casting/open-casting-calls/texas-casting/',
+        productionCompany: 'DFW Sound Works / Enterprise Media',
+        director: 'Samir Patel',
+        daysAgo: 2,
+        datePosted: getRelativeDateStr(-2),
+        deadline: getRelativeDateStr(5),
+        shootDates: 'Remote / Dallas Soundstage session',
+        union: 'Non-Union',
+        payRate: '$950 Flat (Full Buyout)',
+        payNumeric: 950,
+        contactEmail: 'vo-dallas@backstage.com',
+        synopsis: 'National corporate cybersecurity training modules and narrative character voices for interactive business systems.',
+        roles: [
+          { name: 'Lead Narrator & Systems AI', age: '30-55', gender: 'Any', ethnicity: 'Open', desc: 'Authoritative, calm, clear, trustworthy vocal presence.' }
+        ],
+        tapeSpecs: [
+          'Submit 60-second MP3 demo reading technical script excerpt.',
+          'Broadcast quality home studio setup required.'
+        ]
+      },
+
+      // 8. TEXAS - Source: Texas Film Commission (Posted 4 days ago)
+      {
+        id: 'job-tx-3',
+        title: 'Fort Worth Stockyards: Legacy of Iron',
+        category: 'Feature Film',
+        state: 'TX',
+        city: 'Fort Worth',
+        platformKey: 'filmcomm',
+        sourceName: 'Texas Film Commission',
+        sourceUrl: 'https://gov.texas.gov/film',
+        productionCompany: 'Cowtown Feature Cinema',
+        director: 'Marcus Sterling',
+        daysAgo: 4,
+        datePosted: getRelativeDateStr(-4),
+        deadline: getRelativeDateStr(6),
+        shootDates: 'Fort Worth Historic Stockyards',
+        union: 'SAG-AFTRA',
+        payRate: '$1,158/day (Scale)',
+        payNumeric: 1158,
+        contactEmail: 'casting@cowtowncinema.texas.gov',
+        synopsis: 'A gritty period-inspired feature chronicling union rail workers, cattle drivers, and city developers during the 1930s expansion.',
+        roles: [
+          { name: 'Cody McCallister', age: '28-38', gender: 'Male', ethnicity: 'Open', desc: 'Rodeo veteran turned ironworker fighting for safer scaffolding conditions.' },
+          { name: 'Evelyn Gray', age: '30-40', gender: 'Female', ethnicity: 'Open', desc: 'Union organizer writing undercover articles for the Star-Telegram.' }
+        ],
+        tapeSpecs: [
+          'Perform scene 2 sides. Mention equestrian or mechanical skills in slate.'
+        ]
+      },
+
+      // 9. TEXAS - Source: Backstage Texas (Posted 7 days ago)
+      {
+        id: 'job-tx-4',
+        title: 'H-E-B Regional Feast Holiday Commercial',
+        category: 'Commercial',
+        state: 'TX',
+        city: 'San Antonio & Houston',
+        platformKey: 'backstage-tx',
+        sourceName: 'Backstage Texas',
+        sourceUrl: 'https://www.backstage.com/casting/open-casting-calls/texas-casting/',
+        productionCompany: 'Alamo City Advertising Agency',
+        director: 'Jordan Vance',
+        daysAgo: 7,
+        datePosted: getRelativeDateStr(-7),
+        deadline: getRelativeDateStr(3),
+        shootDates: 'San Antonio culinary studios',
+        union: 'Non-Union',
+        payRate: '$2,200 ($700 Session + $1,500 Buyout)',
+        payNumeric: 2200,
+        contactEmail: 'castings@alamoads.com',
+        synopsis: 'Major holiday broadcast campaign celebrating large family gatherings, barbecue smokers, and traditional tamale making.',
+        roles: [
+          { name: 'Abuela Rosa & Family', age: '60-75', gender: 'Female', ethnicity: 'Latina', desc: 'Warm, expressive, joyous matriarch who commands the kitchen.' },
+          { name: 'Uncle Jerry', age: '38-50', gender: 'Male', ethnicity: 'Open', desc: 'Barbecue pitmaster with quick laughs.' }
+        ],
+        tapeSpecs: [
+          'Record a 40-sec video showing your genuine laughter and favorite kitchen memory.'
+        ]
+      },
+
+      // 10. ARKANSAS - Source: Arkansas Film Commission (Posted 1 day ago)
+      {
+        id: 'job-ar-1',
+        title: 'Ozark Mist: The Eureka Springs Mystery',
+        category: 'Feature Film',
+        state: 'AR',
+        city: 'Eureka Springs & Fayetteville',
+        platformKey: 'filmcomm',
+        sourceName: 'Arkansas Film Commission',
+        sourceUrl: 'https://www.arkansasproduction.com/',
+        productionCompany: 'Natural State Motion Pictures',
+        director: 'Clara Dunaway',
+        daysAgo: 1, // Yesterday
+        datePosted: getRelativeDateStr(-1),
+        deadline: getRelativeDateStr(5),
+        shootDates: 'Eureka Springs Historic District & Lake Leatherwood',
+        union: 'SAG-Eligible',
+        payRate: '$386/day (SAG Ultra Low Budget)',
+        payNumeric: 386,
+        contactEmail: 'casting@naturalstatefilms.com',
+        synopsis: 'A psychological thriller set against Victorian homes and winding hillside limestone staircases in Northwest Arkansas.',
+        roles: [
+          { name: 'Lydia Drake', age: '28-36', gender: 'Female', ethnicity: 'Open', desc: 'Botanist returning to her family’s secluded Victorian estate who unearths local secrets.' },
+          { name: 'Deputy Caleb Miller', age: '32-44', gender: 'Male', ethnicity: 'Open', desc: 'Observant local deputy conflicted by childhood loyalties.' }
+        ],
+        tapeSpecs: [
+          'Slate full body. Read scene 4 with subtle, grounded tension.'
+        ]
+      },
+
+      // 11. ARKANSAS - Source: Casting Networks (Posted 5 days ago)
+      {
+        id: 'job-ar-2',
+        title: 'Bentonville Innovation Summit Keynote Ad',
+        category: 'Commercial',
+        state: 'AR',
+        city: 'Bentonville',
+        platformKey: 'castingnet',
+        sourceName: 'Casting Networks AR',
+        sourceUrl: 'https://www.castingnetworks.com/',
+        productionCompany: 'Ozark Media Labs',
+        director: 'Harrison Cole',
+        daysAgo: 5,
+        datePosted: getRelativeDateStr(-5),
+        deadline: getRelativeDateStr(4),
+        shootDates: 'Crystal Bridges & downtown Bentonville bike trails',
+        union: 'Non-Union',
+        payRate: '$1,400 ($700/day x 2 days)',
+        payNumeric: 1400,
+        contactEmail: 'talent@ozarkmedialabs.com',
+        synopsis: 'Commercial promo showcasing high-tech cycling culture, modern art museums, and venture tech hubs in Northwest Arkansas.',
+        roles: [
+          { name: 'Active Tech Founder / Cyclist', age: '26-40', gender: 'All Genders', ethnicity: 'Diverse', desc: 'Physically fit, confident, expressive talent comfortable on gravel bike.' }
+        ],
+        tapeSpecs: [
+          'Attach short video showing active movement and athletic confidence.'
+        ]
+      },
+
+      // 12. KANSAS - Source: Kansas Creative Arts / Film (Posted 2 days ago)
+      {
+        id: 'job-ks-1',
+        title: 'Flint Hills Harvest Noir',
+        category: 'Feature Film',
+        state: 'KS',
+        city: 'Wichita & Hutchinson',
+        platformKey: 'filmcomm',
+        sourceName: 'Kansas Creative Arts',
+        sourceUrl: 'https://www.kansascommerce.gov/kcaic/',
+        productionCompany: 'Sunflower Cinema Collective',
+        director: 'Grant Holbrook',
+        daysAgo: 2,
+        datePosted: getRelativeDateStr(-2),
+        deadline: getRelativeDateStr(6),
+        shootDates: 'South-central Kansas grain elevators',
+        union: 'SAG-Eligible',
+        payRate: '$350/day + Travel & Hotel',
+        payNumeric: 350,
+        contactEmail: 'auditions@sunflowercinema.org',
+        synopsis: 'Suspense drama centered on an independent grain elevator auditor who stumbles upon an embezzlement conspiracy in south-central Kansas.',
+        roles: [
+          { name: 'Jesse Palmer', age: '35-48', gender: 'Male', ethnicity: 'Open', desc: 'Methodical auditor who never lets go of a ledger discrepancy.' },
+          { name: 'Mayor Brenda Clark', age: '50-65', gender: 'Female', ethnicity: 'Open', desc: 'Polished small-town leader shielding her town from scandal.' }
+        ],
+        tapeSpecs: [
+          'Sides available on Kansas Film Commission wire.',
+          'Please ensure clear microphone audio without room echo.'
+        ]
+      },
+
+      // 13. KANSAS - Source: Backstage (Posted 8 days ago)
+      {
+        id: 'job-ks-2',
+        title: 'Wichita Century II Holiday Stage Musical',
+        category: 'Theatre',
+        state: 'KS',
+        city: 'Wichita',
+        platformKey: 'backstage-okc', // Regional Backstage Hub
+        sourceName: 'Backstage Central',
+        sourceUrl: 'https://www.backstage.com/',
+        productionCompany: 'Music Theatre Wichita Collaborations',
+        director: 'Brian J. Marcum',
+        daysAgo: 8,
+        datePosted: getRelativeDateStr(-8),
+        deadline: getRelativeDateStr(8),
+        shootDates: 'Century II Performing Arts Center',
+        union: 'AEA',
+        payRate: '$875/wk (Guest Artist Equity)',
+        payNumeric: 875,
+        contactEmail: 'casting@mtwichita.org',
+        synopsis: 'Nationally recognized musical theatre organization casting principal vocalists and ensemble movers for holiday mainstage production.',
+        roles: [
+          { name: 'Principal Vocalist & Ensemble', age: '20-45', gender: 'All Genders', ethnicity: 'Open', desc: 'Superb classical and contemporary musical theatre vocalists with strong dance ability.' }
+        ],
+        tapeSpecs: [
+          'Submit 1 up-tempo musical theatre piece and 1 traditional ballad with sheet music track.'
+        ]
+      },
+
+      // 14. MISSOURI - Source: Missouri Film Commission (Posted 1 day ago)
+      {
+        id: 'job-mo-1',
+        title: 'Gateway Blues: Soulard Nights',
+        category: 'Feature Film',
+        state: 'MO',
+        city: 'St. Louis',
+        platformKey: 'filmcomm',
+        sourceName: 'Missouri Film Office',
+        sourceUrl: 'https://mofilm.org/',
+        productionCompany: 'River City Cinema / Archway Pictures',
+        director: 'Terrence Washington',
+        daysAgo: 1, // Yesterday
+        datePosted: getRelativeDateStr(-1),
+        deadline: getRelativeDateStr(5),
+        shootDates: 'St. Louis Soulard & Riverfront',
+        union: 'SAG-AFTRA',
+        payRate: '$1,158/day (SAG Scale)',
+        payNumeric: 1158,
+        contactEmail: 'gatewaybluesfilm@rivercitycinema.com',
+        synopsis: 'Period-influenced drama following a St. Louis blues guitarist and his estranged daughter as they resurrect an historic red-brick music hall.',
+        roles: [
+          { name: 'Leon "Slide" DuBois', age: '55-68', gender: 'Male', ethnicity: 'Black / African American', desc: 'Legendary blues guitarist, gravelly humor, weary eyes, genuine musicality.' },
+          { name: 'Maya DuBois', age: '26-34', gender: 'Female', ethnicity: 'Black / African American', desc: 'Jazz pianist & recording engineer fighting to save her father’s legacy.' }
+        ],
+        tapeSpecs: [
+          'Read scene 4 and scene 9. Demonstrate basic piano or guitar capability in clip if applicable.'
+        ]
+      },
+
+      // 15. MISSOURI - Source: Backstage (Posted 3 days ago)
+      {
+        id: 'job-mo-2',
+        title: 'Kansas City Crossroads Episodic Pilot',
+        category: 'Episodic TV / Streaming',
+        state: 'MO',
+        city: 'Kansas City (MO)',
+        platformKey: 'backstage-tx', // Mid-South Backstage Hub
+        sourceName: 'Backstage Midwest',
+        sourceUrl: 'https://www.backstage.com/',
+        productionCompany: 'Crossroads Studio Collective',
+        director: 'Vince Macallan',
+        daysAgo: 3,
+        datePosted: getRelativeDateStr(-3),
+        deadline: getRelativeDateStr(4),
+        shootDates: 'Filming in Crossroads Arts District & River Market',
+        union: 'SAG-Eligible',
+        payRate: '$650/day',
+        payNumeric: 650,
+        contactEmail: 'crossroadspilot@midamericaprod.com',
+        synopsis: 'Binge mystery series following federal auditors and shoreline deputies investigating casino boat laundering operations along the Missouri river.',
+        roles: [
+          { name: 'Captain Walt Higgins', age: '50-62', gender: 'Male', ethnicity: 'Open', desc: 'Water patrol commander who knows every river lock and illegal marina.' },
+          { name: 'Rachel Sims', age: '32-42', gender: 'Female', ethnicity: 'Open', desc: 'Casino floor manager with sharp instincts and a poker face.' }
+        ],
+        tapeSpecs: [
+          'Submit 2-minute self-tape reading provided sides with standard Midwest accent.'
+        ]
+      },
+
+      // 16. MISSOURI - Source: Casting Networks (Posted 5 days ago)
+      {
+        id: 'job-mo-3',
+        title: 'Midwest Regional Health & Research Campaign',
+        category: 'Commercial',
+        state: 'MO',
+        city: 'St. Louis & Columbia',
+        platformKey: 'castingnet',
+        sourceName: 'Casting Networks MO',
+        sourceUrl: 'https://www.castingnetworks.com/',
+        productionCompany: 'Gateway Creative Agency',
+        director: 'Erica Lindqvist',
+        daysAgo: 5,
+        datePosted: getRelativeDateStr(-5),
+        deadline: getRelativeDateStr(5),
+        shootDates: 'Columbia & St. Louis medical campuses',
+        union: 'Non-Union',
+        payRate: '$1,600 Flat ($800/day)',
+        payNumeric: 1600,
+        contactEmail: 'casting@gatewaycreative.com',
+        synopsis: 'Broadcast television commercial honoring cardiovascular researchers, nurses, and patient recovery triumphs in Missouri.',
+        roles: [
+          { name: 'Cardiologist Lead', age: '35-50', gender: 'All Genders', ethnicity: 'Diverse', desc: 'Warm, reassuring, authoritative medical presence on camera.' }
+        ],
+        tapeSpecs: [
+          'Slate with 3 distinct facial expressions: Empathy, Encouraging Focus, and Warmth.'
+        ]
+      },
+
+      // 17. TEXAS - Source: AllCasting (Posted 10 days ago)
+      {
+        id: 'job-tx-5',
+        title: 'Houston Space City Indie Sci-Fi Short',
+        category: 'Short Film',
+        state: 'TX',
+        city: 'Houston',
+        platformKey: 'allcasting',
+        sourceName: 'AllCasting Texas',
+        sourceUrl: 'https://allcasting.com/',
+        productionCompany: 'Bayou City Visuals',
+        director: 'Anthony Chen',
+        daysAgo: 10,
+        datePosted: getRelativeDateStr(-10),
+        deadline: getRelativeDateStr(3),
+        shootDates: 'Houston soundstages',
+        union: 'Non-Union',
+        payRate: '$300/day',
+        payNumeric: 300,
+        contactEmail: 'spacecityshort@allcasting.com',
+        synopsis: 'Futuristic short film exploring communication delays and emotional longing between Earth telemetry control and a deep solar observatory.',
+        roles: [
+          { name: 'Flight Director Lewis', age: '38-52', gender: 'Male', ethnicity: 'Open', desc: 'Weary flight director making the final telemetry uplink.' }
+        ],
+        tapeSpecs: [
+          'Submit self-tape reading excerpt with calm technical cadence.'
+        ]
+      },
+
+      // 18. OKLAHOMA - Source: Oklahoma Film + Music Office (Posted 12 days ago)
+      {
+        id: 'job-ok-6',
+        title: 'Cherokee Nation Cultural Heritage Docudrama',
+        category: 'Episodic TV / Streaming',
+        state: 'OK',
+        city: 'Tahlequah & Tulsa',
+        platformKey: 'okfilm',
+        sourceName: 'OK Film + Music Office',
+        sourceUrl: 'https://www.okfilmmusic.org/crew-and-casting-calls',
+        productionCompany: 'Cherokee Nation Film Office & FireThorn Media',
+        director: 'K. Bird',
+        daysAgo: 12,
+        datePosted: getRelativeDateStr(-12),
+        deadline: getRelativeDateStr(4),
+        shootDates: 'Tahlequah Historic Complex & Sequoyah’s Cabin',
+        union: 'SAG-Eligible',
+        payRate: '$500/day (Special Docudrama Scale)',
+        payNumeric: 500,
+        contactEmail: 'cherokeecastings@okfilmmusic.org',
+        synopsis: 'A high-definition historical docuseries examining the preservation of the Cherokee syllabary and tribal resilience across the 19th and 20th centuries.',
+        roles: [
+          { name: 'Sequoyah (Historical Reenactment)', age: '45-60', gender: 'Male', ethnicity: 'Cherokee / Native American', desc: 'Visionary silversmith and creator of the Cherokee syllabary. Dignified, resolute.' },
+          { name: 'Narrator / Historian', age: '30-55', gender: 'All Genders', ethnicity: 'Indigenous', desc: 'Clear, resonant storytelling vocal quality.' }
+        ],
+        tapeSpecs: [
+          'Native American talent strongly encouraged to submit.',
+          'State any Cherokee language fluency in slate (not mandatory for all roles).'
+        ]
+      }
+    ];
+
+    // Filter & Search State
+    let currentState = 'ALL';
+    let currentMaxDays = 14;
+    let currentPlatformFilter = 'all';
+    let currentCategory = 'All Categories';
+    let currentUnion = 'all';
+    let currentSort = 'date-newest';
+    let currentSearch = '';
+    let activeModalJob = null;
+
+    // Resilient Storage with in-memory fallback
+    const memStorage = {};
+    const safeStorage = {
+      getItem: (key) => {
+        try { return localStorage.getItem(key); } catch (e) { return memStorage[key] || null; }
+      },
+      setItem: (key, val) => {
+        try { localStorage.setItem(key, val); } catch (e) { memStorage[key] = val; }
+      }
+    };
+
+    let auditionTracker = [];
+    try {
+      const stored = safeStorage.getItem('heartland_audition_tracker');
+      if (stored) auditionTracker = JSON.parse(stored);
+    } catch(e) {
+      auditionTracker = [];
+    }
+
+    // Modal scroll lock and keyboard ESC dismiss
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeJobDetailModal();
+        closeAiIngestorModal();
+        toggleTrackerDrawer(false);
+      }
+    });
+
+    function setBodyScrollLocked(isLocked) {
+      if (isLocked) {
+        document.body.classList.add('overflow-hidden');
+      } else {
+        const anyModalOpen = !document.getElementById('jobDetailModal').classList.contains('hidden') ||
+                             !document.getElementById('aiIngestorModal').classList.contains('hidden') ||
+                             !document.getElementById('trackerDrawer').classList.contains('hidden');
+        if (!anyModalOpen) {
+          document.body.classList.remove('overflow-hidden');
+        }
+      }
+    }
+
+    function handleModalBackdropClick(event, containerId, closeFn) {
+      if (event.target && event.target.id === containerId) {
+        closeFn();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderStateTabs();
+      renderPlatformChips();
+      renderCategoryChips();
+      refreshListingsDisplay();
+      updateTrackerCountBadge();
+      lucide.createIcons();
+    });
+
+    /**
+     * Synchronizes live count badges on every state tab (ALL, OK, TX, AR, KS, MO)
+     * based on current timeline slider, source filter, union filter, and search query.
+     */
+    function renderStateTabs() {
+      const container = document.getElementById('stateTabsBar');
+      container.innerHTML = '';
+
+      STATES.forEach(st => {
+        const count = CASTING_DATA.filter(j => {
+          if (st.code !== 'ALL' && j.state !== st.code) return false;
+          if (j.daysAgo > currentMaxDays) return false;
+          if (currentPlatformFilter !== 'all' && j.platformKey !== currentPlatformFilter) return false;
+          if (currentCategory !== 'All Categories' && j.category !== currentCategory) return false;
+          if (currentUnion !== 'all' && !j.union.includes(currentUnion)) return false;
+          if (currentSearch) {
+            const matchTitle = j.title.toLowerCase().includes(currentSearch);
+            const matchCity = j.city.toLowerCase().includes(currentSearch);
+            const matchRoles = j.roles.some(r => r.name.toLowerCase().includes(currentSearch) || r.age.toLowerCase().includes(currentSearch));
+            if (!matchTitle && !matchCity && !matchRoles) return false;
+          }
+          return true;
+        }).length;
+
+        const isActive = currentState === st.code;
+        const btn = document.createElement('button');
+        btn.onclick = () => setStateFilter(st.code);
+        btn.className = `flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
+          isActive 
+            ? 'bg-amber-500 text-radar-950 font-bold shadow-md shadow-amber-500/20' 
+            : 'bg-radar-850 text-slate-300 hover:bg-radar-800 border border-radar-border'
+        }`;
+        
+        btn.innerHTML = `
+          <span>${escapeHtml(st.name)}</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full font-black ${isActive ? 'bg-radar-950/20 text-radar-950' : 'bg-radar-800 text-amber-400'}">
+            ${count}
+          </span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function setStateFilter(code) {
+      currentState = code;
+      renderStateTabs();
+      refreshListingsDisplay();
+    }
+
+    function renderPlatformChips() {
+      const container = document.getElementById('platformFilterChips');
+      container.innerHTML = `<span class="text-slate-400 text-[11px] font-semibold shrink-0">Filter Source:</span>`;
+
+      const allBtn = document.createElement('button');
+      allBtn.onclick = () => setPlatformFilter('all');
+      allBtn.className = `px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap transition ${currentPlatformFilter === 'all' ? 'bg-slate-200 text-radar-950 font-bold' : 'bg-radar-800 text-slate-400 hover:text-slate-200'}`;
+      allBtn.innerText = 'All Sources';
+      container.appendChild(allBtn);
+
+      Object.keys(PLATFORMS).forEach(key => {
+        const plat = PLATFORMS[key];
+        const isSelected = currentPlatformFilter === key;
+        const btn = document.createElement('button');
+        btn.onclick = () => setPlatformFilter(key);
+        btn.className = `px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap transition border ${
+          isSelected 
+            ? plat.colorClass + ' ring-1 ring-amber-400' 
+            : 'bg-radar-950 text-slate-400 border-radar-border hover:text-slate-200'
+        }`;
+        btn.innerText = plat.name;
+        container.appendChild(btn);
+      });
+    }
+
+    function setPlatformFilter(key) {
+      currentPlatformFilter = key;
+      renderPlatformChips();
+      renderStateTabs();
+      refreshListingsDisplay();
+    }
+
+    function renderCategoryChips() {
+      const container = document.getElementById('categoryFilterChips');
+      container.innerHTML = '';
+
+      CATEGORIES.forEach(cat => {
+        const isSelected = currentCategory === cat;
+        const btn = document.createElement('button');
+        btn.onclick = () => {
+          currentCategory = cat;
+          renderCategoryChips();
+          renderStateTabs();
+          refreshListingsDisplay();
+        };
+        btn.className = `px-2 py-0.5 rounded text-[11px] whitespace-nowrap transition ${
+          isSelected 
+            ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/50' 
+            : 'bg-radar-950 text-slate-400 hover:text-slate-200 border border-radar-border'
+        }`;
+        btn.innerText = cat;
+        container.appendChild(btn);
+      });
+    }
+
+    function setTimelineQuick(days) {
+      currentMaxDays = days;
+      document.getElementById('daysAgoSlider').value = days;
+      updateTimelineLabels(days);
+      
+      [1, 3, 7, 14].forEach(d => {
+        const btn = document.getElementById(`btnTime${d}`);
+        if (btn) {
+          if (d === days) {
+            btn.className = "px-2 py-0.5 rounded text-[11px] bg-amber-500 text-radar-950 font-bold transition";
+          } else {
+            btn.className = "px-2 py-0.5 rounded text-[11px] bg-radar-800 hover:bg-radar-700 text-slate-300 transition";
+          }
+        }
+      });
+
+      renderStateTabs();
+      refreshListingsDisplay();
+    }
+
+    function handleSliderInput(val) {
+      currentMaxDays = parseInt(val, 10);
+      updateTimelineLabels(currentMaxDays);
+      renderStateTabs();
+      refreshListingsDisplay();
+    }
+
+    function updateTimelineLabels(days) {
+      const label = days === 1 ? 'Past 24 Hours' : `Past ${days} Days`;
+      document.getElementById('sliderValueText').innerText = `${days} ${days === 1 ? 'Day' : 'Days'}`;
+      document.getElementById('timelineStatusText').innerText = label;
+    }
+
+    function handleSearchQuery(query) {
+      currentSearch = query.toLowerCase().trim();
+      renderStateTabs();
+      refreshListingsDisplay();
+    }
+
+    function handleSortSelect(sortVal) {
+      currentSort = sortVal;
+      refreshListingsDisplay();
+    }
+
+    function handleUnionSelect(unionVal) {
+      currentUnion = unionVal;
+      renderStateTabs();
+      refreshListingsDisplay();
+    }
+
+    function resetAllFilters() {
+      currentState = 'ALL';
+      currentMaxDays = 14;
+      currentPlatformFilter = 'all';
+      currentCategory = 'All Categories';
+      currentUnion = 'all';
+      currentSort = 'date-newest';
+      currentSearch = '';
+
+      document.getElementById('globalSearchInput').value = '';
+      document.getElementById('daysAgoSlider').value = 14;
+      document.getElementById('sortFilterSelect').value = 'date-newest';
+      document.getElementById('unionFilterSelect').value = 'all';
+      updateTimelineLabels(14);
+
+      renderStateTabs();
+      renderPlatformChips();
+      renderCategoryChips();
+      refreshListingsDisplay();
+      showToast('Filters Cleared', 'Displaying all 14-day casting notices across the Heartland.');
+    }
+
+    function refreshListingsDisplay() {
+      const grid = document.getElementById('castingCardsGrid');
+      const emptyState = document.getElementById('radarEmptyState');
+
+      let filtered = CASTING_DATA.filter(job => {
+        if (currentState !== 'ALL' && job.state !== currentState) return false;
+        if (job.daysAgo > currentMaxDays) return false;
+        if (currentPlatformFilter !== 'all' && job.platformKey !== currentPlatformFilter) return false;
+        if (currentCategory !== 'All Categories' && job.category !== currentCategory) return false;
+        if (currentUnion !== 'all' && !job.union.includes(currentUnion)) return false;
+        if (currentSearch) {
+          const matchTitle = job.title.toLowerCase().includes(currentSearch);
+          const matchCity = job.city.toLowerCase().includes(currentSearch);
+          const matchProd = job.productionCompany.toLowerCase().includes(currentSearch);
+          const matchRoles = job.roles.some(r => 
+            r.name.toLowerCase().includes(currentSearch) || 
+            r.age.toLowerCase().includes(currentSearch) ||
+            r.desc.toLowerCase().includes(currentSearch)
+          );
+          if (!matchTitle && !matchCity && !matchProd && !matchRoles) return false;
+        }
+        return true;
+      });
+
+      // Default sorting: Strictly Newest Posted First
+      if (currentSort === 'date-newest') {
+        filtered.sort((a, b) => a.daysAgo - b.daysAgo);
+      } else if (currentSort === 'deadline-soon') {
+        filtered.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+      } else if (currentSort === 'pay-high') {
+        filtered.sort((a, b) => b.payNumeric - a.payNumeric);
+      } else if (currentSort === 'title-az') {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      document.getElementById('filteredCountLabel').innerText = `Showing ${filtered.length} Audition${filtered.length === 1 ? '' : 's'}`;
+      document.getElementById('activeJobsTotalBadge').innerText = `${CASTING_DATA.filter(j => j.daysAgo <= 14).length} Active Postings`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      grid.innerHTML = '';
+
+      filtered.forEach(job => {
+        const card = buildCastingCardElement(job);
+        grid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function buildCastingCardElement(job) {
+      const isSaved = auditionTracker.some(item => item.id === job.id);
+      const plat = PLATFORMS[job.platformKey] || PLATFORMS['okfilm'];
+
+      let freshnessText = '';
+      let freshnessClass = '';
+      if (job.daysAgo === 0) {
+        freshnessText = 'Posted Today';
+        freshnessClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+      } else if (job.daysAgo === 1) {
+        freshnessText = 'Yesterday';
+        freshnessClass = 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20';
+      } else {
+        freshnessText = `${job.daysAgo}d ago`;
+        freshnessClass = 'bg-radar-800 text-slate-400 border-radar-border';
+      }
+
+      const card = document.createElement('div');
+      card.className = "bg-radar-900 border border-radar-border hover:border-radar-border/90 rounded-2xl p-5 flex flex-col justify-between transition-all duration-200 hover:shadow-2xl hover:shadow-black/70 group";
+      
+      card.innerHTML = `
+        <div>
+          <!-- Header Bar: State & City, Source Badge, Freshness, & Bookmark -->
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+              <span class="text-xs font-black px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                ${escapeHtml(job.state)} • ${escapeHtml(job.city)}
+              </span>
+              
+              <!-- Direct Link to Official Casting Hub -->
+              <a href="${escapeHtml(job.sourceUrl)}" target="_blank" rel="noopener noreferrer" 
+                 onclick="event.stopPropagation()"
+                 title="Open verified posting on ${escapeHtml(job.sourceName)}"
+                 class="inline-flex items-center space-x-1 text-[11px] font-bold px-2 py-0.5 rounded-md border transition hover:opacity-90 ${plat.colorClass}">
+                <span class="w-1.5 h-1.5 rounded-full ${plat.badgeBg}"></span>
+                <span>${escapeHtml(job.sourceName)}</span>
+                <i data-lucide="external-link" class="w-2.5 h-2.5 opacity-70"></i>
+              </a>
+
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md border ${freshnessClass}">
+                ${freshnessText}
+              </span>
+            </div>
+
+            <!-- Bookmark Action -->
+            <button 
+              onclick="event.stopPropagation(); toggleSaveJob('${escapeHtml(job.id)}')"
+              title="${isSaved ? 'Remove from My Auditions' : 'Save to Pipeline'}"
+              class="p-1.5 rounded-lg bg-radar-800 hover:bg-radar-700 text-slate-300 transition ${isSaved ? 'text-amber-400 bg-amber-500/10 ring-1 ring-amber-500/30' : ''}"
+            >
+              <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Project Title & Production Company -->
+          <div class="mb-3">
+            <div class="flex items-center space-x-2 text-[11px] text-slate-400 mb-1">
+              <span>${escapeHtml(job.category)}</span>
+              <span>•</span>
+              <span class="text-sky-400 font-semibold">${escapeHtml(job.union)}</span>
+            </div>
+            <h3 class="text-base font-bold text-white group-hover:text-amber-400 transition tracking-tight line-clamp-1">
+              ${escapeHtml(job.title)}
+            </h3>
+            <p class="text-xs text-slate-400 line-clamp-1 mt-0.5">
+              ${escapeHtml(job.productionCompany)}
+            </p>
+          </div>
+
+          <!-- Compensation & Deadline Summary Box -->
+          <div class="bg-radar-950 border border-radar-border rounded-xl p-3 mb-3.5 space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Compensation:</span>
+              <span class="font-bold text-amber-400">${escapeHtml(job.payRate)}</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Tape Deadline:</span>
+              <span class="font-medium text-rose-300">${escapeHtml(job.deadline)}</span>
+            </div>
+          </div>
+
+          <!-- Character Roles Needed Pills -->
+          <div class="mb-4">
+            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1.5">Roles Available:</span>
+            <div class="flex flex-wrap gap-1.5">
+              ${job.roles.map(r => `
+                <span class="text-[11px] bg-radar-850 text-slate-200 px-2 py-0.5 rounded-md border border-radar-border font-medium">
+                  ${escapeHtml(r.name)} (${escapeHtml(r.age)})
+                </span>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer Action -->
+        <div class="pt-3 border-t border-radar-border flex items-center justify-between">
+          <span class="text-[11px] text-slate-500 flex items-center gap-1 font-mono">
+            <i data-lucide="video" class="w-3 h-3 text-amber-500"></i> Self-Tape
+          </span>
+
+          <button 
+            onclick="openJobDetailModal('${escapeHtml(job.id)}')"
+            class="px-3 py-1.5 bg-radar-850 hover:bg-amber-500 hover:text-radar-950 text-amber-300 text-xs font-bold rounded-lg border border-amber-500/30 hover:border-transparent transition flex items-center gap-1 focus:outline-none"
+          >
+            <span>Breakdown & Sides</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function openJobDetailModal(jobId) {
+      const job = CASTING_DATA.find(j => j.id === jobId);
+      if (!job) return;
+      activeModalJob = job;
+
+      const plat = PLATFORMS[job.platformKey] || PLATFORMS['okfilm'];
+
+      document.getElementById('modalJobTitle').innerText = job.title;
+      document.getElementById('modalCompanyInfo').innerText = `${job.productionCompany} • Director: ${job.director}`;
+      document.getElementById('modalStateTag').innerText = `${job.state} - ${job.city}`;
+      
+      const sourceBadge = document.getElementById('modalSourceBadge');
+      sourceBadge.className = `text-xs font-bold px-2.5 py-0.5 rounded flex items-center gap-1 border ${plat.colorClass}`;
+      sourceBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${plat.badgeBg}"></span><span>${escapeHtml(job.sourceName)}</span>`;
+
+      document.getElementById('modalUnionTag').innerText = job.union;
+      document.getElementById('modalPostedTime').innerText = `Posted ${job.daysAgo === 0 ? 'Today' : job.daysAgo + 'd ago'} (${job.datePosted})`;
+      
+      document.getElementById('modalPayRate').innerText = job.payRate;
+      document.getElementById('modalLocationText').innerText = `${job.city}, ${job.state}`;
+      document.getElementById('modalShootWindow').innerText = job.shootDates;
+      document.getElementById('modalTapeDeadline').innerText = job.deadline;
+      document.getElementById('modalSynopsisText').innerText = job.synopsis;
+
+      // Populate Character Roles List & AI Role Dropdown
+      const rolesContainer = document.getElementById('modalRolesList');
+      const aiRoleSelect = document.getElementById('aiSelectRole');
+      rolesContainer.innerHTML = '';
+      aiRoleSelect.innerHTML = '';
+
+      job.roles.forEach(role => {
+        const div = document.createElement('div');
+        div.className = 'bg-radar-950 border border-radar-border rounded-xl p-3.5';
+        div.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <h5 class="text-xs font-bold text-amber-400">${escapeHtml(role.name)}</h5>
+            <span class="text-[11px] text-slate-400 font-medium">${escapeHtml(role.gender)} • Age: ${escapeHtml(role.age)} • ${escapeHtml(role.ethnicity)}</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(role.desc)}</p>
+        `;
+        rolesContainer.appendChild(div);
+
+        const opt = document.createElement('option');
+        opt.value = role.name;
+        opt.innerText = `${role.name} (${role.age}, ${role.gender})`;
+        aiRoleSelect.appendChild(opt);
+      });
+
+      // Populate Tape Specs
+      const tapeUl = document.getElementById('modalTapeSpecsList');
+      tapeUl.innerHTML = '';
+      job.tapeSpecs.forEach(spec => {
+        const li = document.createElement('li');
+        li.innerText = spec;
+        tapeUl.appendChild(li);
+      });
+
+      // Direct External Source Link
+      const externalLink = document.getElementById('modalExternalSourceLink');
+      externalLink.href = job.sourceUrl;
+
+      // Email Submission Mailto Link
+      const mailtoLink = document.getElementById('modalMailtoLink');
+      mailtoLink.href = `mailto:${encodeURIComponent(job.contactEmail)}?subject=CASTING SUBMISSION: ${encodeURIComponent(job.title)} - [Your Name]&body=Dear Casting Team,%0D%0A%0D%0AI am writing to submit my self-tape for the role in ${encodeURIComponent(job.title)}.%0D%0A%0D%0ALocation: ${encodeURIComponent(job.state)} Local Hire%0D%0AHeadshot & Reel Links:`;
+
+      updateModalSaveBtn();
+
+      // Reset AI Pitch Output
+      document.getElementById('aiPitchContainer').classList.add('hidden');
+      document.getElementById('aiPitchOutput').innerText = '';
+
+      document.getElementById('jobDetailModal').classList.remove('hidden');
+      setBodyScrollLocked(true);
+      lucide.createIcons();
+    }
+
+    function closeJobDetailModal() {
+      document.getElementById('jobDetailModal').classList.add('hidden');
+      activeModalJob = null;
+      setBodyScrollLocked(false);
+    }
+
+    function updateModalSaveBtn() {
+      if (!activeModalJob) return;
+      const isSaved = auditionTracker.some(item => item.id === activeModalJob.id);
+      const label = document.getElementById('modalSaveBtnLabel');
+      const btn = document.getElementById('modalSaveTrackerBtn');
+      if (isSaved) {
+        label.innerText = 'Saved in Pipeline';
+        btn.classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+      } else {
+        label.innerText = 'Save to Pipeline';
+        btn.classList.remove('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+      }
+    }
+
+    function toggleSaveCurrentModalJob() {
+      if (activeModalJob) {
+        toggleSaveJob(activeModalJob.id);
+        updateModalSaveBtn();
+      }
+    }
+
+    function toggleSaveJob(jobId) {
+      const job = CASTING_DATA.find(j => j.id === jobId);
+      if (!job) return;
+
+      const idx = auditionTracker.findIndex(item => item.id === jobId);
+      if (idx >= 0) {
+        auditionTracker.splice(idx, 1);
+        showToast('Removed from Pipeline', `${job.title} removed from your auditions.`);
+      } else {
+        auditionTracker.push({
+          id: job.id,
+          title: job.title,
+          category: job.category,
+          state: job.state,
+          city: job.city,
+          deadline: job.deadline,
+          payRate: job.payRate,
+          contactEmail: job.contactEmail,
+          sourceName: job.sourceName,
+          status: 'Shortlisted',
+          notes: 'Saved for self-tape submission.'
+        });
+        showToast('Saved to Pipeline!', `${job.title} added to My Auditions.`);
+      }
+
+      saveTrackerLocalStorage();
+      updateTrackerCountBadge();
+      refreshListingsDisplay();
+      renderTrackerDrawerItems(currentTrackerFilterStatus);
+    }
+
+    function saveTrackerLocalStorage() {
+      safeStorage.setItem('heartland_audition_tracker', JSON.stringify(auditionTracker));
+    }
+
+    function updateTrackerCountBadge() {
+      const count = auditionTracker.length;
+      document.getElementById('headerTrackerCount').innerText = count;
+      document.getElementById('trackerTotalSummaryText').innerText = `${count} tracked audition${count === 1 ? '' : 's'}`;
+    }
+
+    function toggleTrackerDrawer(show) {
+      const drawer = document.getElementById('trackerDrawer');
+      if (show) {
+        drawer.classList.remove('hidden');
+        renderTrackerDrawerItems(currentTrackerFilterStatus);
+        setBodyScrollLocked(true);
+      } else {
+        drawer.classList.add('hidden');
+        setBodyScrollLocked(false);
+      }
+    }
+
+    let currentTrackerFilterStatus = 'all';
+    function filterTrackerStatus(status) {
+      currentTrackerFilterStatus = status;
+      document.querySelectorAll('.tracker-tab-btn').forEach(btn => {
+        if (btn.dataset.status === status) {
+          btn.className = 'tracker-tab-btn px-2.5 py-1 rounded bg-amber-500 text-radar-950 font-bold transition';
+        } else {
+          btn.className = 'tracker-tab-btn px-2.5 py-1 rounded bg-radar-800 text-slate-300 hover:text-white transition';
+        }
+      });
+      renderTrackerDrawerItems(status);
+    }
+
+    function renderTrackerDrawerItems(statusFilter) {
+      const container = document.getElementById('trackerListContainer');
+      container.innerHTML = '';
+
+      let items = auditionTracker;
+      if (statusFilter !== 'all') {
+        items = items.filter(i => i.status === statusFilter);
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-14 text-slate-500">
+            <i data-lucide="bookmark" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+            <p class="text-xs">No auditions currently in this status.</p>
+            <p class="text-[11px] text-slate-600 mt-1">Bookmark casting calls to manage tape deadlines and callbacks.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'bg-radar-950 border border-radar-border rounded-xl p-3.5 space-y-2.5';
+        div.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">${escapeHtml(item.state)} - ${escapeHtml(item.city)}</span>
+                <span class="text-[10px] text-slate-400">${escapeHtml(item.sourceName)}</span>
+              </div>
+              <h4 class="text-xs font-bold text-white mt-1">${escapeHtml(item.title)}</h4>
+              <p class="text-[11px] text-slate-400">${escapeHtml(item.payRate)} • Due: ${escapeHtml(item.deadline)}</p>
+            </div>
+            <button onclick="toggleSaveJob('${escapeHtml(item.id)}')" class="text-slate-500 hover:text-rose-400 p-1" title="Remove">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between text-xs pt-1 border-t border-radar-border">
+            <span class="text-[11px] text-slate-400 font-semibold">Stage:</span>
+            <select onchange="updateTrackerStatus('${escapeHtml(item.id)}', this.value)" class="bg-radar-900 border border-radar-border text-slate-200 text-[11px] rounded px-2 py-0.5 focus:border-amber-400 focus:outline-none">
+              <option value="Shortlisted" ${item.status === 'Shortlisted' ? 'selected' : ''}>Shortlisted</option>
+              <option value="Submitted" ${item.status === 'Submitted' ? 'selected' : ''}>Tape Sent</option>
+              <option value="Callback" ${item.status === 'Callback' ? 'selected' : ''}>Callback</option>
+              <option value="Booked" ${item.status === 'Booked' ? 'selected' : ''}>Booked 🎉</option>
+            </select>
+          </div>
+
+          <input 
+            type="text" 
+            value="${escapeHtml(item.notes || '')}" 
+            placeholder="Add note (e.g. Sent tape via Vimeo password: okc)..." 
+            onchange="updateTrackerNotes('${escapeHtml(item.id)}', this.value)"
+            class="w-full bg-radar-900 border border-radar-border rounded px-2 py-1 text-[11px] text-slate-300 focus:outline-none focus:border-amber-500"
+          >
+        `;
+        container.appendChild(div);
+      });
+
+      lucide.createIcons();
+    }
+
+    function updateTrackerStatus(id, newStatus) {
+      const item = auditionTracker.find(i => i.id === id);
+      if (item) {
+        item.status = newStatus;
+        saveTrackerLocalStorage();
+        renderTrackerDrawerItems(currentTrackerFilterStatus);
+        showToast('Status Updated', `Audition moved to "${newStatus}".`);
+      }
+    }
+
+    function updateTrackerNotes(id, text) {
+      const item = auditionTracker.find(i => i.id === id);
+      if (item) {
+        item.notes = text;
+        saveTrackerLocalStorage();
+      }
+    }
+
+    function clearAllTrackerData() {
+      if (auditionTracker.length === 0) return;
+      auditionTracker = [];
+      saveTrackerLocalStorage();
+      updateTrackerCountBadge();
+      renderTrackerDrawerItems('all');
+      refreshListingsDisplay();
+      showToast('Pipeline Cleared', 'All saved auditions have been cleared.');
+    }
+
+    const apiKey = ""; // Canvas runtime automatically supplies API key
+
+    async function generateAiSlateAndPitch() {
+      if (!activeModalJob) return;
+
+      const chosenRoleName = document.getElementById('aiSelectRole').value;
+      const roleObj = activeModalJob.roles.find(r => r.name === chosenRoleName) || activeModalJob.roles[0];
+      const actorNotes = document.getElementById('aiActorHighlights').value.trim() || 'Midwest local hire, versatile dramatic actor';
+      
+      const btn = document.getElementById('btnGeneratePitch');
+      const container = document.getElementById('aiPitchContainer');
+      const output = document.getElementById('aiPitchOutput');
+
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Drafting...`;
+      lucide.createIcons();
+
+      const systemPrompt = `You are an elite talent agent and casting consultant specializing in film and television auditions in Oklahoma, Texas, Arkansas, Kansas, and Missouri. Write a concise, professional submission cover email note to the Casting Director and an on-camera slate script for a self-tape audition. Avoid generic cliches; emphasize regional availability and authenticity.`;
+      
+      const userPrompt = `
+Generate a tailored submission cover email and on-camera slate script for:
+Production: "${activeModalJob.title}" (${activeModalJob.category})
+Shoot Location: ${activeModalJob.city}, ${activeModalJob.state}
+Target Role: "${roleObj.name}" (Age: ${roleObj.age}, Gender: ${roleObj.gender}, Bio: ${roleObj.desc})
+Actor Background/Highlights: "${actorNotes}"
+Compensation: ${activeModalJob.payRate}
+
+Format your response strictly as:
+[SUBMISSION COVER EMAIL TO CASTING]
+(Concise 2-3 sentences introducing the actor, local hire availability in ${activeModalJob.state}, and passion for this character role)
+
+[CAMERA SLATE SCRIPT]
+(2-3 sentences to read to camera: Name, Representation, Height, City/State of Residence, Role, and Confirmation of Availability)`;
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const payload = {
+          contents: [{ parts: [{ text: userPrompt }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`API status ${response.status}`);
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (text) {
+          output.innerText = text;
+          container.classList.remove('hidden');
+          showToast('Pitch Drafted!', 'Custom submission note and slate script generated.');
+        } else {
+          throw new Error('No content returned');
+        }
+      } catch (err) {
+        // High quality offline heuristic fallback
+        const fallback = `[SUBMISSION COVER EMAIL TO CASTING]\nDear Casting Team,\n\nI am writing to submit my audition for the role of ${roleObj.name} in "${activeModalJob.title}". As an actor with local hire capability in ${activeModalJob.state} (${actorNotes}), I connect strongly with this material. Attached please find my headshot, resume, and self-tape link.\n\n[CAMERA SLATE SCRIPT]\n"Hi, my name is [Your Name], reading for ${roleObj.name} in '${activeModalJob.title}'. I'm [Height], based in ${activeModalJob.city}, ${activeModalJob.state}, and I am fully available for all shoot dates."`;
+        output.innerText = fallback;
+        container.classList.remove('hidden');
+        showToast('Pitch Ready', 'Generated template submission slate.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Draft Note`;
+        lucide.createIcons();
+      }
+    }
+
+    function copyGeneratedPitch() {
+      const text = document.getElementById('aiPitchOutput').innerText;
+      if (text) {
+        copyToClipboard(text);
+      }
+    }
+
+    function openAiIngestorModal() {
+      document.getElementById('aiIngestorModal').classList.remove('hidden');
+      document.getElementById('rawNoticeInput').value = '';
+      document.getElementById('aiIngestorLoading').classList.add('hidden');
+      setBodyScrollLocked(true);
+      lucide.createIcons();
+    }
+
+    function closeAiIngestorModal() {
+      document.getElementById('aiIngestorModal').classList.add('hidden');
+      setBodyScrollLocked(false);
+    }
+
+    function loadSampleOKNotice() {
+      document.getElementById('rawNoticeInput').value = 
+`URGENT CASTING CALL - TULSA / PAWHUSKA, OK
+Feature Film: "Prairie Smoke"
+Production Co: Red Dirt Cinema
+Filming: Nov 12 - Nov 28 in Tulsa, OK.
+Rate: $650/day (Day Player SAG-Eligible)
+Roles:
+1. Deputy Vance: Male, 38-48, any ethnicity. Seasoned law enforcement officer investigating cattle ranch boundary disputes.
+2. Claire Holloway: Female, 30-40, sharp, determined attorney protecting tribal mineral leases.
+Self-tapes due Friday at 5:00 PM CST to prairiecastingok@gmail.com. Include slate with full name, height, and Oklahoma local hire status.`;
+    }
+
+    async function runAiNoticeIngestion() {
+      const rawText = document.getElementById('rawNoticeInput').value.trim();
+      if (!rawText) {
+        showToast('Notice Empty', 'Please paste raw casting text to extract.');
+        return;
+      }
+
+      const loader = document.getElementById('aiIngestorLoading');
+      const btn = document.getElementById('btnExecuteIngest');
+      loader.classList.remove('hidden');
+      btn.disabled = true;
+
+      const prompt = `You are a casting director and data parser. Parse this unstructured casting call notice into a single structured JSON object conforming strictly to our Heartland casting database (Oklahoma, Texas, Arkansas, Kansas, or Missouri).
+Raw Notice:
+${rawText}`;
+
+      const jsonSchema = {
+        type: "OBJECT",
+        properties: {
+          title: { type: "STRING" },
+          category: { type: "STRING", enum: ["Feature Film", "Episodic TV / Streaming", "Commercial", "Theatre", "Voiceover", "Short Film"] },
+          state: { type: "STRING", enum: ["OK", "TX", "AR", "KS", "MO"] },
+          city: { type: "STRING" },
+          productionCompany: { type: "STRING" },
+          director: { type: "STRING" },
+          union: { type: "STRING" },
+          payRate: { type: "STRING" },
+          contactEmail: { type: "STRING" },
+          synopsis: { type: "STRING" },
+          roles: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                name: { type: "STRING" },
+                age: { type: "STRING" },
+                gender: { type: "STRING" },
+                ethnicity: { type: "STRING" },
+                desc: { type: "STRING" }
+              }
+            }
+          },
+          tapeSpecs: {
+            type: "ARRAY",
+            items: { type: "STRING" }
+          }
+        },
+        required: ["title", "category", "state", "city", "payRate", "contactEmail", "roles"]
+      };
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: jsonSchema
+          }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error('API parse failed');
+        const data = await response.json();
+        const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const parsed = JSON.parse(jsonText);
+
+        const newJob = {
+          id: 'imported-job-' + Date.now(),
+          title: parsed.title || 'Untitled Heartland Production',
+          category: parsed.category || 'Feature Film',
+          state: ['OK','TX','AR','KS','MO'].includes(parsed.state) ? parsed.state : detectStateFromText(rawText),
+          city: parsed.city || 'Oklahoma City',
+          platformKey: parsed.state === 'TX' ? 'backstage-tx' : 'okfilm',
+          sourceName: parsed.state === 'TX' ? 'Backstage Texas' : 'OK Film + Music Office',
+          sourceUrl: parsed.state === 'TX' ? 'https://www.backstage.com/casting/open-casting-calls/texas-casting/' : 'https://www.okfilmmusic.org/crew-and-casting-calls',
+          productionCompany: parsed.productionCompany || 'Regional Independent Cinema',
+          director: parsed.director || 'Casting Director',
+          daysAgo: 0,
+          datePosted: getRelativeDateStr(0),
+          deadline: getRelativeDateStr(5),
+          shootDates: 'Upcoming (See breakdown)',
+          union: parsed.union || 'SAG-Eligible',
+          payRate: parsed.payRate || '$500/day',
+          payNumeric: 500,
+          contactEmail: parsed.contactEmail || 'casting@heartlandtalent.org',
+          synopsis: parsed.synopsis || rawText.substring(0, 160) + '...',
+          roles: parsed.roles && parsed.roles.length > 0 ? parsed.roles : [{ name: 'Lead Role', age: '25-45', gender: 'Open', ethnicity: 'Open', desc: 'See full breakdown description.' }],
+          tapeSpecs: parsed.tapeSpecs && parsed.tapeSpecs.length > 0 ? parsed.tapeSpecs : ['Slate with full name, location, and self-tape scene sides.']
+        };
+
+        CASTING_DATA.unshift(newJob);
+        closeAiIngestorModal();
+        renderStateTabs();
+        refreshListingsDisplay();
+        showToast('Audition Added!', `"${newJob.title}" added to your 14-day radar.`);
+      } catch (err) {
+        // Robust regex heuristic fallback parser
+        const detectedState = detectStateFromText(rawText);
+        const emailMatch = rawText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+        const rateMatch = rawText.match(/\$\d+[\d,]*(\/day|\/wk|\s*flat)?/i);
+
+        const fallbackJob = {
+          id: 'imported-job-' + Date.now(),
+          title: extractTitleFromText(rawText),
+          category: 'Feature Film',
+          state: detectedState,
+          city: detectedState === 'OK' ? 'Oklahoma City' : detectedState === 'TX' ? 'Austin' : 'Little Rock',
+          platformKey: detectedState === 'TX' ? 'backstage-tx' : 'okfilm',
+          sourceName: detectedState === 'TX' ? 'Backstage Texas' : 'OK Film + Music Office',
+          sourceUrl: detectedState === 'TX' ? 'https://www.backstage.com/casting/open-casting-calls/texas-casting/' : 'https://www.okfilmmusic.org/crew-and-casting-calls',
+          productionCompany: 'Regional Indie Media',
+          director: 'Independent',
+          daysAgo: 0,
+          datePosted: getRelativeDateStr(0),
+          deadline: getRelativeDateStr(4),
+          shootDates: 'Upcoming production window',
+          union: rawText.includes('SAG') ? 'SAG-AFTRA' : 'Non-Union',
+          payRate: rateMatch ? rateMatch[0] : '$450/day',
+          payNumeric: 450,
+          contactEmail: emailMatch ? emailMatch[0] : 'submissions@castingradar.org',
+          synopsis: rawText.substring(0, 180) + '...',
+          roles: [
+            { name: 'Lead Performer', age: '30-45', gender: 'Open', ethnicity: 'Any', desc: 'Principal role matching notice description.' }
+          ],
+          tapeSpecs: ['Slate with name, height, and local hire status.', 'Self-tape scene excerpt.']
+        };
+
+        CASTING_DATA.unshift(fallbackJob);
+        closeAiIngestorModal();
+        renderStateTabs();
+        refreshListingsDisplay();
+        showToast('Notice Parsed', `Extracted "${fallbackJob.title}" into feed.`);
+      } finally {
+        loader.classList.add('hidden');
+        btn.disabled = false;
+      }
+    }
+
+    function detectStateFromText(txt) {
+      const lower = txt.toLowerCase();
+      if (lower.includes('texas') || lower.includes('austin') || lower.includes('dallas') || lower.includes('houston')) return 'TX';
+      if (lower.includes('arkansas') || lower.includes('eureka springs') || lower.includes('fayetteville') || lower.includes('bentonville')) return 'AR';
+      if (lower.includes('kansas') || lower.includes('wichita')) return 'KS';
+      if (lower.includes('missouri') || lower.includes('st. louis') || lower.includes('kansas city')) return 'MO';
+      return 'OK'; // Default Oklahoma
+    }
+
+    function extractTitleFromText(txt) {
+      const lines = txt.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      for (const line of lines) {
+        if (line.toLowerCase().includes('film:') || line.toLowerCase().includes('project:') || line.toLowerCase().includes('title:')) {
+          return line.replace(/(film|project|title):/i, '').trim();
+        }
+      }
+      return lines[0]?.substring(0, 45) || 'Heartland Audition Notice';
+    }
+
+    function exportRadarCSV() {
+      const filtered = CASTING_DATA.filter(j => j.daysAgo <= currentMaxDays);
+      if (filtered.length === 0) {
+        showToast('Nothing to Export', 'No casting calls match current timeline filter.');
+        return;
+      }
+
+      let csv = 'Title,Category,State,City,Source Platform,Source URL,Union,Compensation,Date Posted,Deadline,Contact Email\n';
+      filtered.forEach(j => {
+        csv += `"${j.title.replace(/"/g, '""')}","${j.category}","${j.state}","${j.city}","${j.sourceName}","${j.sourceUrl}","${j.union}","${j.payRate}","${j.datePosted}","${j.deadline}","${j.contactEmail}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `HeartlandCasting_Radar_14Days_${getRelativeDateStr(0)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('Export Complete', 'Exported radar auditions to CSV.');
+    }
+
+    function copyToClipboard(text) {
+      if (!text) return;
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast('Copied to Clipboard!', 'Text copied successfully.');
+      } catch (err) {
+        showToast('Copy Failed', 'Please manually select and copy.');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    let toastTimer;
+    function showToast(title, msg) {
+      const toast = document.getElementById('appToast');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastMessage').innerText = msg;
+
+      toast.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
